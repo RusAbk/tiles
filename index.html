@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+    </div>
+
+    <script>
+        'use strict';
+
+        const params = getParams();
+        console.log(params);
+        const config = {
+            count: (params.count ? params.count : 9),
+            image: (params.img ? params.img : 'image.jpg'),
+            showNumbers: (params.numbers == 'true' ? true : false),
+            fromOne: true,
+            congratulationDelay: 500
+        }
+
+        const container = document.querySelector('.container');
+        let tiles = [];
+        let dragTile;
+
+
+        for (let i = 0; i < config.count; i++) {
+            let countInRow = Math.sqrt(config.count);
+            let size = container.clientWidth / countInRow;
+
+            let row = Math.ceil((i + 1) / countInRow) - 1;
+            let col = i % countInRow;
+            console.log(row + ' ' + col);
+
+            let tile = document.createElement('div');
+            tile.classList.add('tile');
+            if (config.showNumbers)
+                tile.innerHTML = i + 1;
+            tile.dataset.order = i + 1;
+            tile.setAttribute('draggable', 'true');
+            tile.style.width = `${size}px`;
+            tile.style.height = `${size}px`;
+
+            tile.style.backgroundImage = `url(${config.image})`;
+            tile.style.backgroundSize = `${container.clientWidth}px ${container.clientWidth}px`;
+            tile.style.backgroundPosition = `${-size * col}px ${-size * row}px`;
+
+            tile.addEventListener('dragstart', () => {
+                tile.classList.add('dragTile');
+                dragTile = tile;
+            })
+            tile.addEventListener('dragend', () => {
+                tile.classList.remove('dragTile');
+                dragTile = undefined;
+            })
+            tile.addEventListener('dragenter', () => {
+                tile.classList.add('dragTarget');
+            })
+            tile.addEventListener('dragleave', () => {
+                tile.classList.remove('dragTarget');
+            })
+            tile.addEventListener('drop', (e) => {
+                tile.classList.remove('dragTarget');
+                let tmp = tile.style.order;
+                tile.style.order = dragTile.style.order;
+                dragTile.style.order = tmp;
+                checkWin();
+            })
+            tile.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            })
+
+            container.append(tile);
+            tiles.push(tile);
+        }
+
+        function checkWin() {
+            for (let tile of tiles) {
+                if (tile.dataset.order - 1 != tile.style.order)
+                    return false;
+            }
+            setTimeout(congratulate, config.congratulationDelay);
+        }
+
+        function congratulate() {
+            alert('You win!');
+        }
+
+        let orderArr = getShuffledArr(config.count);
+        for (let i in tiles) {
+            tiles[i].style.order = orderArr[i];
+        }
+
+
+        function getShuffledArr(len, fromOne = false) {
+            let arr = [];
+            for (let i = 0; i < len; i++) {
+                let el;
+                do {
+                    if (fromOne)
+                        el = getRandomInt(1, len);
+                    else
+                        el = getRandomInt(0, len - 1);
+                } while (arr.indexOf(el) != -1)
+                arr.push(el);
+            }
+            return arr;
+        }
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+
+        function getParams() {
+            return window
+                    .location
+                    .search
+                    .replace('?', '')
+                    .split('&')
+                    .reduce(
+                        function (p, e) {
+                            var a = e.split('=');
+                            p[decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
+                            return p;
+                        }, {}
+                    );
+        }
+    </script>
+</body>
+
+</html>
