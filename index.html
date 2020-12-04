@@ -16,7 +16,6 @@
         'use strict';
 
         const params = getParams();
-        console.log(params);
         const config = {
             count: (params.count ? params.count : 9),
             image: (params.img ? params.img : 'image.jpg'),
@@ -36,7 +35,6 @@
 
             let row = Math.ceil((i + 1) / countInRow) - 1;
             let col = i % countInRow;
-            console.log(row + ' ' + col);
 
             let tile = document.createElement('div');
             tile.classList.add('tile');
