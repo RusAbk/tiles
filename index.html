@@ -11,6 +11,20 @@
 <body>
     <div class="container">
     </div>
+    <div class="flex-break"></div>
+    <a href="" class="btn giveup" target="_blank">Сдаться и пройти по ссылке</a>
+
+    <div class="fade hidden"></div>
+    <div class="congrat hidden">
+        <h2>Отлично!</h2>
+        <img src="congratulations.gif" alt="">
+        <div class="link">
+            <p>
+                Для перехода по ссылке жми на кнопку
+            </p>
+            <a href="" class="btn winlink" target="_blank">Перейти</a>
+        </div>
+    </div>
 
     <script>
         'use strict';
@@ -19,10 +33,15 @@
         const config = {
             count: (params.count ? params.count : 9),
             image: (params.img ? params.img : 'https://picsum.photos/500'),
+            url: params.url,
             showNumbers: (params.numbers == 'true' ? true : false),
             fromOne: true,
-            congratulationDelay: 500
+            congratulationDelay: 300,
+            showGiveUp: true
         }
+
+        document.querySelector('.winlink').setAttribute('href', config.url);
+        document.querySelector('.giveup').setAttribute('href', config.url);
 
         const container = document.querySelector('.container');
         let tiles = [];
@@ -87,7 +106,8 @@
         }
 
         function congratulate() {
-            alert('You win!');
+            document.querySelector('.fade').classList.remove('hidden');
+            document.querySelector('.congrat').classList.remove('hidden');
         }
 
         let orderArr = getShuffledArr(config.count);
